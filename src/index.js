@@ -1,22 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import useAxios from "./useAxios";
 
-const App = () => {
-  const { loading, data, error, refetch } = useAxios({
-    url: "https://yts.lt/api/v2/list_movies.json"
-  });
-  console.log(
-    `Loading: ${loading}\nError: ${error}\nData: ${JSON.stringify(data)}`
-  );
-  return (
-    <div className="App" style={{ height: "1000vh" }}>
-      <h1>{data && data.status}</h1>
-      <h2>{loading && "Loading"}</h2>
-      <button onClick={refetch}>Refetch</button>
-    </div>
-  );
+const useHover = onHover => {
+  if (typeof onHover !== "function") {
+    return;
+  }
+  const element = useRef();
+  useEffect(() => {
+    if (element.current) {
+      element.current.addEventListener("mouseenter", onHover);
+    }
+    return () => {
+      if (element.current) {
+        element.current.removeEventListener("mouseenter", onHover);
+      }
+    };
+  }, []);
+  return element;
 };
+
+function App() {
+  const onHover = () => console.log("Somebody hovered!");
+  const markedRef = useHover(onHover);
+  return <h1 ref={markedRef}>Hello Nooks</h1>;
+}
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(<App />, rootElement);
