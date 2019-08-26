@@ -1,34 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 
-const useNetwork = onChange => {
-  const [status, setStatus] = useState(navigator.onLine);
-  const handleChagne = () => {
-    if (typeof onChange === "function") {
-      onChange(navigator.onLine);
-    }
-    setStatus(navigator.onLine);
+const useScroll = () => {
+  const [state, setState] = useState({
+    x: 0,
+    y: 0
+  });
+  const onScroll = () => {
+    // console.log(`y ${window.scrollY}, x ${widnow.scrollX}`);
+    setState({ y: window.scrollY, x: window.scrollX });
   };
   useEffect(() => {
-    window.addEventListener("online", handleChagne);
-    window.addEventListener("offline", handleChagne);
-
-    return () => {
-      window.removeEventListener("online", handleChagne);
-      window.removeEventListener("offline", handleChagne);
-    };
-  });
-  return status;
+    window.addEventListener("scroll", onScroll);
+    return () => window.addEventListener("scroll", onScroll);
+  }, []);
+  return state;
 };
 
 const App = () => {
-  const handleNetworkChange = online => {
-    console.log(online ? "We just went online" : "We are offline");
-  };
-  const onLine = useNetwork(handleNetworkChange);
+  const { y } = useScroll();
   return (
-    <div className="App">
-      <h1>{onLine ? "Online" : "Offline"}</h1>
+    <div className="App" style={{ height: "1000vh" }}>
+      <h1 style={{ position: "fixed", color: y > 100 ? "red" : "blue" }}>Hi</h1>
     </div>
   );
 };
